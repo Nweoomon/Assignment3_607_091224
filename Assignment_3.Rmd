@@ -1,0 +1,105 @@
+---
+title: "Assignment_3"
+author: "Nwe Oo Mon (Nina)"
+date: "2024-09-12"
+output: html_document
+---
+## College Majors
+
+We are using the 173 majors listed in fivethirtyeight.com’s College Majors dataset (https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/]).
+
+```{r loading dataset}
+# Load the dataset from GitHub
+url <- "https://raw.githubusercontent.com/Nweoomon/Assignment3_607_091224/main/majors-list.csv"
+data <- read.csv(url)
+
+# Load the necessary library
+library(dplyr)
+
+glimpse(data)
+```
+
+## Identifying the majors that contain either "DATA" or "STATISTICS"
+
+```{r identifying majors}
+grep(pattern = 'data|statistics', data$Major, value = TRUE, ignore.case = TRUE)
+```
+
+## Transforming the data
+```{r transforms}
+# Original string
+text <- '"bell pepper"  "bilberry"     "blackberry"   "blood orange"
+
+"blueberry"    "cantaloupe"   "chili pepper" "cloudberry"  
+
+"elderberry"   "lime"         "lychee"       "mulberry"    
+
+"olive"        "salal berry"'
+
+# Use gsub() to replace multiple spaces with a single space and add commas
+formatted_text <- gsub('("[^"]+")\\s*', '\\1, ', text) 
+
+# Remove the trailing comma and space at the end of the text
+formatted_text <- sub(", $", "", formatted_text)
+
+# Wrap the cleaned text with c() to make it look like a vector in R
+formatted_text <- paste0("c(", formatted_text, ")")
+
+# Print the result
+cat(formatted_text)
+```
+
+## Describing in words, what the expressions will match:
+
+```{r matching_expressions}
+# Sample strings to test the regular expressions
+test_strings <- c(
+  "aaa", "abba", "abab", "abaca", "abccba", "abcidkcba")
+
+# 1. Test: (.)\1\1 
+test1 <- grep("(.)\1\1", test_strings, value = TRUE)
+cat("Matches for (.)\1\1:", test1)
+
+# 1. Revised Test: "(.)\\1\\1" - Matches three consecutive identical characters
+test1 <- grep("(.)\\1\\1", test_strings, value = TRUE)
+cat("Matches for (.)\\1\\1:", test1)
+
+# 2. Test: "(.)(.)\\2\\1" - Matches a character followed by another character and their reverse
+test2 <- grep("(.)(.)\\2\\1", test_strings, value = TRUE)
+cat("Matches for (.)(.)\\2\\1:", test2)
+
+# 3. Test: (..)\1 
+test3 <- grep("(..)\1", test_strings, value = TRUE)
+cat("Matches for (..)\1:", test3)
+
+# 3. Revised Test: "(..)\\1" - Matches two characters that repeat
+test3 <- grep("(..)\\1", test_strings, value = TRUE)
+cat("Matches for (..)\\1:", test3)
+
+# 4. Test: "(.).\\1.\\1" - Matches a character This pattern matches a character is followed by any character, then the same character again, followed by any character, and the same character once more.
+test4 <- grep("(.).\\1.\\1", test_strings, value = TRUE)
+cat("Matches for (.).\\1.\\1:", test4)
+
+# 5. Test: "(.)(.)(.).*\\3\\2\\1" - Matches three characters followed by their reverse
+test5 <- grep("(.)(.)(.).*\\3\\2\\1", test_strings, value = TRUE)
+cat("Matches for (.)(.)(.).*\\3\\2\\1:", test5)
+```
+
+## Constructing regular expressions to match words
+
+```{r match_words}
+# Sample list of words to test
+words <- c("racecar", "church", "eleven", "noon")
+
+# 1. Test: Words that start and end with the same character
+test1 <- grep("^(.).*\\1$", words, value = TRUE)
+cat("Matches for words that start and end with the same character:", test1)
+
+# 2. Test: Words containing a repeated pair of letters
+test2 <- grep("(.{2}).*\\1", words, value = TRUE)
+cat("Matches for words containing a repeated pair of letters:", test2)
+
+# 3. Test: Words containing one letter repeated in at least three places
+test3 <- grep("(.).*\\1.*\\1", words, value = TRUE)
+cat("Matches for words containing one letter repeated at least three times:", test3)
+```
